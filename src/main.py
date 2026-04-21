@@ -2,7 +2,11 @@
 # SPDX-License-Identifier: MIT
 
 import asyncio
+import json
+import sys
 import httpx
+from catalog_item_to_rdf import catalog_item_to_jsonld
+from catalog_item_types import CatalogItem
 from catalog_types import CatalogSchema
 import logging
 
@@ -12,8 +16,8 @@ logging.getLogger("httpx").disabled = True
 
 
 async def main():
-    # we fetch with max = 1000 since that is the maximum amount of items that can be returned in a single request
-    base_url = "https://www.sciencebase.gov/catalog/items/get?q=&filter=systemType%3DData+Release&format=json&max=1000"
+    MAX_ITEMS_PER_PAGE = 1000
+    base_url = f"https://www.sciencebase.gov/catalog/items/get?q=&filter=systemType%3DData+Release&format=json&max={MAX_ITEMS_PER_PAGE}"
     catalog_url = base_url
 
     offset = 0
@@ -32,9 +36,20 @@ async def main():
                 break
 
             for item in as_json["items"]:
-                _item_url = item["link"]["url"]
+                item_url = item["link"]["url"]
+                item_url_response = await client.get(f"{item_url}?format=json")
+                item_url_response.raise_for_status()
+                try:
+                    item_json: CatalogItem = item_url_response.json()
+                except json.decoder.JSONDecodeError as e:
+                    msg = f"Failed to decode JSON {item_url_response.text}"
+                    raise ValueError(msg) from e
 
-            offset += 1000
+                as_jsonld = catalog_item_to_jsonld(item_json)
+                print(json.dumps(as_jsonld))
+                sys.exit(0)
+
+            offset += MAX_ITEMS_PER_PAGE
             catalog_url = f"{base_url}&offset={offset}"
 
 

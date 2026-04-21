@@ -1,7 +1,7 @@
 # Copyright 2026 Lincoln Institute of Land Policy
 # SPDX-License-Identifier: MIT
 
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 # Types which represent the JSON response from item urls like
 # https://www.sciencebase.gov/catalog/item/5411deb1e4b0fe7e184a8eff?format=json
@@ -49,6 +49,12 @@ class CatalogItemDistributionLink(TypedDict):
     files: str
 
 
+class CatalogItemContact(TypedDict):
+    name: str
+    email: str
+    organization: dict[Literal["displayText"], str]
+
+
 class CatalogItem(TypedDict):
     summary: str
     identifiers: list[CatalogItemIdentifier]
@@ -58,5 +64,6 @@ class CatalogItem(TypedDict):
     citation: str
     purpose: str
     maintenanceUpdateFrequency: str
+    contacts: list[CatalogItemContact]
     spatial: CatalogItemSpatial
-    distributions: list[CatalogItemDistributionLink]
+    distributionLinks: list[CatalogItemDistributionLink]
