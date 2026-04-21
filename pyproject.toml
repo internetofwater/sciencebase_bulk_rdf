@@ -1,0 +1,22 @@
+# Copyright 2026 Lincoln Institute of Land Policy
+# SPDX-License-Identifier: MIT
+
+[project]
+name = "sciencebase"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+]
+
+[dependency-groups]
+dev = [
+    "prek>=0.3.10",
+    "pyright>=1.1.408",
+]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
