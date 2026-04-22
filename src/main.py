@@ -95,7 +95,7 @@ async def main(cache: bool = False):
                     failures[item_url] = e
                     continue
 
-                as_jsonld = catalog_item_to_jsonld(item_json)
+                as_jsonld = catalog_item_to_jsonld(item_json, item_url)
                 print(json.dumps(as_jsonld))
 
             offset += MAX_ITEMS_PER_PAGE

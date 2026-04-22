@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 from typing import Any, Dict
-import uuid
 
 from catalog_item_types import (
     CatalogItem,
@@ -97,11 +96,13 @@ def map_distributions(
 # ----------------------------
 
 
-def catalog_item_to_jsonld(item: CatalogItem) -> dict[str, Any]:
+def catalog_item_to_jsonld(item: CatalogItem, url: str) -> dict[str, Any]:
     """
     Convert CatalogItem → JSON-LD dataset
     using schema.org + GeoSPARQL WKT geometry
     """
+
+    sciencebase_id = url.split("/catalog/item/")[-1]
 
     jsonld: Dict[str, Any] = {
         "@context": {
@@ -109,13 +110,15 @@ def catalog_item_to_jsonld(item: CatalogItem) -> dict[str, Any]:
             "gsp": "http://www.opengis.net/ont/geosparql#",
             "dc": "http://purl.org/dc/terms/",
         },
-        "@id": f"http://geoconnex.us/catalog/{uuid.uuid4()}",
+        "@id": f"http://geoconnex.us/usgs/sciencebase/{sciencebase_id}",
         "@type": "schema:Dataset",
     }
 
     # ----------------------------
     # Core dataset metadata
     # ----------------------------
+
+    jsonld["schema:url"] = url
 
     jsonld["schema:name"] = item.get("title") or "Unnamed Dataset"
 
